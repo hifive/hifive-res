@@ -1,0 +1,110 @@
+Unless otherwise stated, all source files are licensed under
+the Apache License, Version 2.0(http://www.apache.org/licenses/LICENSE-2.0).
+
+-----
+Code under:
+ext/jquery
+
+jQuery
+URL:http://jquery.com/
+License:
+	(before ver.1.8) Dual licensed under the MIT and GPL licenses.
+		https://github.com/jquery/jquery/blob/master/MIT-LICENSE.txt
+		https://github.com/jquery/jquery/blob/master/GPL-LICENSE.txt
+	(ver.1.8 and later versions) MIT license
+		https://jquery.org/license/
+Local Modifications: None.
+
+-----
+Code under:
+ext/ejslint
+
+EJS(Embedded JavaScript)
+URL:http://embeddedjs.com
+License:MIT license
+	http://www.opensource.org/licenses/mit-license.php
+Local Modifications: None.
+
+-----
+Code under:
+ext/jqplugins/easing
+
+Query Easing
+URL:http://gsgd.co.uk/sandbox/jquery/easing/
+License:Open source under the BSD License.
+Local Modifications: None.
+
+-----
+Code under:
+ext/jqplugins/jqm
+
+jQuery Mobile
+URL:http://jquerymobile.com/
+License:
+	(before ver.1.2.0) Dual licensed under the MIT and GPL licenses.
+		https://github.com/jquery/jquery/blob/master/MIT-LICENSE.txt
+		https://github.com/jquery/jquery/blob/master/GPL-LICENSE.txt
+	(ver.1.2 and later versions) MIT license
+		https://jquery.org/license/
+Local Modifications: None.
+
+-----
+Code under:
+ext/jqplugins/jstree
+
+jsTree
+URL:http://jstree.com/
+License:MIT licenses.
+  http://www.opensource.org/licenses/mit-license.php
+Local Modifications: None.
+
+-----
+Code under:
+ext/jqplugins/nouislider
+
+jQuery Range Slider
+URL:http://refreshless.com/nouislider/
+License:WTFPL
+	http://www.wtfpl.net/txt/copying/
+Local Modifications: None.
+
+-----
+Code under:
+ext/jqplugins/shadow-animation
+
+Shadow animation jQuery plugin
+URL:http://www.bitstorm.org/jquery/shadow-animation/
+License:Dual licensed under the MIT and GPL licenses
+	https://github.com/jquery/jquery/blob/master/MIT-LICENSE.txt
+	https://github.com/jquery/jquery/blob/master/GPL-LICENSE.txt
+Local Modifications: None.
+
+-----
+Code under:
+ext/sinon
+
+Sinon.JS
+URL:http://sinonjs.org/
+License:Open source under the BSD License.
+	 https://github.com/cjohansen/Sinon.JS/blob/master/LICENSE
+Local Modifications: None.
+
+-----
+Code under:
+ext/qunit
+
+Qunit
+URL:http://docs.jquery.com/QUnit
+License:MIT licenses
+	https://github.com/jquery/jquery/blob/master/MIT-LICENSE.txt
+Local Modifications: None.
+
+-----
+Code under:
+fw
+
+hifive
+URL:https://github.com/hifive/hifivemain
+License:Apache License, Version 2.0 (the "License")
+	http://www.apache.org/licenses/LICENSE-2.0
+Local Modifications: None.
