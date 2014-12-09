@@ -90,7 +90,7 @@ ext/sinon
 Sinon.JS
 URL:http://sinonjs.org/
 License:Open source under the BSD License.
-	 https://github.com/cjohansen/Sinon.JS/blob/master/LICENSE
+	https://github.com/cjohansen/Sinon.JS/blob/master/LICENSE
 Local Modifications: None.
 
 -----
@@ -100,5 +100,15 @@ ext/qunit
 Qunit
 URL:http://docs.jquery.com/QUnit
 License:MIT licenses
-	https://github.com/jquery/jquery/blob/master/MIT-LICENSE.txt
+	https://github.com/jquery/qunit/blob/master/LICENSE.txt
+Local Modifications: None.
+
+-----
+Code under:
+ext/ace
+
+Ace
+URL:http://ace.c9.io/
+License:BSD License
+	https://github.com/ajaxorg/ace/blob/master/LICENSE
 Local Modifications: None.
