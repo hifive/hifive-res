@@ -15,6 +15,18 @@ License:
 		https://jquery.org/license/
 Local Modifications: None.
 
+
+-----
+Code under:
+ext/ejs
+
+EJS(Embedded JavaScript)
+URL:http://www.embeddedjs.com/
+License:MIT License
+	http://www.embeddedjs.com/
+Local Modifications: None.
+
+
 -----
 Code under:
 ext/ejslint
