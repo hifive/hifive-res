@@ -117,10 +117,10 @@ Local Modifications: None.
 
 -----
 Code under:
-ext/ace
+ext/pdfjs
 
-Ace
-URL:http://ace.c9.io/
+pdf.js
+URL:https://github.com/mozilla/pdf.js/
 License:BSD License
-	https://github.com/ajaxorg/ace/blob/master/LICENSE
+	https://github.com/mozilla/pdf.js/blob/master/LICENSE
 Local Modifications: None.
