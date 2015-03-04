@@ -124,3 +124,16 @@ URL:https://github.com/mozilla/pdf.js/
 License:BSD License
 	https://github.com/mozilla/pdf.js/blob/master/LICENSE
 Local Modifications: None.
+
+-----
+Code under:
+ext/bootstrap
+
+Bootstrap
+URL:https://github.com/twbs/bootstrap
+License:
+	(before ver.3) the Apache License, Version 2.0
+			http://www.apache.org/licenses/LICENSE-2.0
+	(ver.3 and later versions) MIT license
+		https://github.com/twbs/bootstrap/blob/master/LICENSE
+Local Modifications: None.
