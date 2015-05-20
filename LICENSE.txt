@@ -137,3 +137,14 @@ License:
 	(ver.3 and later versions) MIT license
 		https://github.com/twbs/bootstrap/blob/master/LICENSE
 Local Modifications: None.
+
+-----
+Code under:
+ext/threejs
+
+three.js
+URL:https://github.com/mrdoob/three.js/blob/master/LICENSE
+License:
+	The MIT License
+		https://github.com/mrdoob/three.js/blob/master/LICENSE
+Local Modifications: None.
