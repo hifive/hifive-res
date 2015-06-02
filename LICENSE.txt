@@ -148,3 +148,12 @@ License:
 	The MIT License
 		https://github.com/mrdoob/three.js/blob/master/LICENSE
 Local Modifications: None.
+
+-----
+Code under:
+ext/box2dweb
+
+box2dweb
+URL:https://code.google.com/p/box2dweb/
+License: zlib License
+Local Modifications: None.
