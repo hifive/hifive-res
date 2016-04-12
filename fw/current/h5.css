@@ -1,6 +1,6 @@
 @charset "utf-8";
 /*
- * Copyright (C) 2012-2014 NS Solutions Corporation
+ * Copyright (C) 2012-2016 NS Solutions Corporation
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,11 @@
  * limitations under the License.
  *
  * hifive css
- *   version 1.1.14
- *   gitCommitId : a4c4bbab5019987c08ee2ba99ec4612a7054b8b3
- *   build at 2014/09/02 13:16:23.002 (+0900)
- *   (util,controller,modelWithBinding,view,ui,api.geo,api.sqldb,api.storage)
+ *   version 1.2.2
+ *   gitCommitId : 18daf02760ed112fc2d57b1256e0ebe47c7dfd2e
+ *   build at 2016/03/01 21:22:33.183 (+0900)
+ *   (scopedglobals,util,async,resource,controller,dataModel,view,modelWithBinding,validation,ui,api.geo,api.sqldb,api.storage,scene)
  */
-
-
 /* インジケータ オーバーレイDIV,メッセージDIV 共通設定 */
 .h5-indicator {
 	text-align: center;
@@ -194,3 +192,115 @@ div.a.throbber-line {
 }
 
 /*------------------------ Theme 'a' end ---------------------------*/
+/* 吹き出し(共通) */
+.validation-balloon {
+	padding: 5px;
+	position: absolute;
+	background: #ffffee;
+	border: 1px solid #124;
+	display: none;
+}
+
+/* 吹き出し(上) */
+.validation-balloon.top:after,.validation-balloon.top:before {
+	top: 100%;
+	left: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.validation-balloon.top:after {
+	border-color: rgba(255, 255, 238, 0);
+	border-top-color: #ffffee;
+	border-width: 30px;
+	margin-left: -30px;
+}
+
+.validation-balloon.top:before {
+	border-color: rgba(21, 34, 66, 0);
+	border-top-color: #152242;
+	border-width: 31px;
+	margin-left: -31px;
+}
+
+/** 吹き出し(下) **/
+.validation-balloon.bottom:after,.validation-balloon.bottom:before {
+	bottom: 100%;
+	left: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.validation-balloon.bottom:after {
+	border-color: rgba(255, 255, 238, 0);
+	border-bottom-color: #ffffee;
+	border-width: 30px;
+	margin-left: -30px;
+}
+
+.validation-balloon.bottom:before {
+	border-color: rgba(21, 34, 66, 0);
+	border-bottom-color: #152242;
+	border-width: 31px;
+	margin-left: -31px;
+}
+
+/** 吹き出し(左) **/
+.validation-balloon.left:after,.validation-balloon.left:before {
+	left: 100%;
+	top: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.validation-balloon.left:after {
+	border-color: rgba(255, 255, 238, 0);
+	border-left-color: #ffffee;
+	border-width: 30px;
+	margin-top: -30px;
+}
+
+.validation-balloon.left:before {
+	border-color: rgba(21, 34, 66, 0);
+	border-left-color: #152242;
+	border-width: 31px;
+	margin-top: -31px;
+}
+
+/** 吹き出し(右) **/
+.validation-balloon.right:after,.validation-balloon.right:before {
+	right: 100%;
+	top: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.validation-balloon.right:after {
+	border-color: rgba(255, 255, 238, 0);
+	border-right-color: #ffffee;
+	border-width: 30px;
+	margin-top: -30px;
+}
+
+.validation-balloon.right:before {
+	border-color: rgba(21, 34, 66, 0);
+	border-right-color: #152242;
+	border-width: 31px;
+	margin-top: -31px;
+}
