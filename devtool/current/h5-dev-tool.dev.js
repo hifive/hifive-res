@@ -15,8 +15,8 @@
  *
  * hifive Developer Tool
  *   version 1.0.8
- *   gitCommitId : 6541489a88520a488162532445c6c050282553dc
- *   build at 2018/06/18 15:58:49.000 (+0900)
+ *   gitCommitId : 3c6717a59cfac721691227071f7c843ebd156437
+ *   build at 2018/06/18 18:10:13.264 (+0900)
  */
 
 (function($) {
@@ -3590,12 +3590,18 @@
 								for (var i = levelString.length; i < 5; i++) {
 									levelString += ' ';
 								}
+
+								var msgAry = obj.args;
+								if (typeof obj.args[0] !== 'string') {
+									msgAry = ['(Object)'];
+								}
+
 								loggerArray.push({
 									levelString: levelString,
 									level: obj.level,
 									time: timeFormat(obj.date),
 									timeStamp: obj.date.getTime(),
-									message: h5.u.str.format.apply(h5.u.str, obj.args)
+									message: h5.u.str.format.apply(h5.u.str, msgAry)
 								});
 								loggerArray.dispatchEvent({
 									type: 'logUpdate'
