@@ -14,9 +14,9 @@
  * limitations under the License.
  *
  * hifive
- *   version 1.3.3
- *   gitCommitId : 39990125704305e5c214bf547ea366973efbbf28
- *   build at 2018/12/03 19:59:07.837 (+0900)
+ *   version 1.3.2
+ *   gitCommitId : 0084b77e49d83072e8a23b17039a2fd2b3ca4565
+ *   build at 2018/05/24 19:30:59.068 (+0900)
  *   (scopedglobals,util,async,cls,event,resource,controller,dataModel,view,modelWithBinding,validation,ui,api.geo,api.sqldb,api.storage,scene)
  */
 (function($){
@@ -31,7 +31,7 @@
 
 	//h5存在チェック
 	if (window.h5) {
-		if (window.h5.env && (window.h5.env.version === '1.3.3')) {
+		if (window.h5.env && (window.h5.env.version === '1.3.2')) {
 			// 既にロード済みのhifiveと同じバージョンをロードしようとした場合は何もしない
 			return;
 		}
@@ -55,7 +55,7 @@
 	};
 
 	h5.env = {
-		version: '1.3.3'
+		version: '1.3.2'
 	};
 
 	// =========================================================================
@@ -5394,59 +5394,76 @@ var h5internal = {
 	//（その場合、backingStore自体のプロパティも定義する必要有）
 	//TODO propertyChangeイベントをあげるように
 	//TODO propertyChangeイベントをクラスからあげられるように
+	//TODO setupPropertyで、DescをObjectとして作成してdefineProperty()をまとめて一度だけ呼ぶようにする
 
-	var ERR_CODE_NO_CLASS_DESC = 18000;
-	var ERR_CODE_NO_CLASS_NAME = 18001;
-	var ERR_CODE_NO_CLASS_CONSTRUCTOR = 18002;
-	var ERR_CODE_CTOR_NOT_CHAINED = 18003;
-	var ERR_CODE_METHOD_MUST_BE_FUNCTION = 18004;
-	var ERR_CODE_CLASS_IS_ABSTRACT = 18005;
-	var ERR_CODE_CANNOT_DEFINE_ROOT_CLASS_PROPS = 18006;
-	var ERR_CODE_INVALID_NAMESPACE = 18007;
-	var ERR_CODE_RESERVED_STATIC_PROP_NAME = 18008;
-	var ERR_CODE_DUPLICATE_PROP = 18009;
-	var ERR_CODE_DUPLICATE_STATIC_PROP = 18010;
-	var ERR_CODE_STATIC_METHOD_MUST_BE_FUNCTION = 18011;
-
-	//fwLoggerのメソッド呼び出しはビルド時（minify時）に呼び出しコードごと削除される
-	var fwLogger = h5.log.createLogger('h5.cls');
-
-	/* del begin */
-
-	var FW_LOG_ISDYNAMIC_IS_OBSOLETE = '{0}: クラス定義のisDynamic指定はver.1.3.3で廃止されました。ver.1.3.3以降、全てのクラスについて、インスタンス生成時にフレームワークによるObject.seal()は行われず、動的なプロパティ追加が可能です。';
-
-	var errMsgMap = {};
-	errMsgMap[ERR_CODE_NO_CLASS_DESC] = 'クラス定義がありません。';
-	errMsgMap[ERR_CODE_NO_CLASS_NAME] = 'クラス定義にnameがありません。クラス名は必須です。';
-	errMsgMap[ERR_CODE_NO_CLASS_CONSTRUCTOR] = '{0}: クラスのメソッド定義にconstructorがありません。constructorは必須です。';
-	errMsgMap[ERR_CODE_CTOR_NOT_CHAINED] = '{0}: 親クラスのコンストラクタ呼び出しが途中で行われていません。継承関係のあるすべてのクラスのコンストラクタの先頭で親コンストラクタの呼び出しが行われていることを確認してください。';
-	errMsgMap[ERR_CODE_METHOD_MUST_BE_FUNCTION] = '{0}: クラス定義のmethodには関数以外は記述できません。違反しているプロパティ={1}';
-	errMsgMap[ERR_CODE_CLASS_IS_ABSTRACT] = '{0}: このクラスは抽象クラス(isAbstract=true)です。インスタンスを生成することはできません。';
-	errMsgMap[ERR_CODE_CANNOT_DEFINE_ROOT_CLASS_PROPS] = '{0}: 親クラスで定義されているプロパティは再定義できません。定義しようとしたプロパティ={1}';
-	errMsgMap[ERR_CODE_INVALID_NAMESPACE] = 'namespaceが指定されていません。';
-	errMsgMap[ERR_CODE_RESERVED_STATIC_PROP_NAME] = '静的プロパティに予約済みの名前は使用できません。名前={0}';
-	errMsgMap[ERR_CODE_DUPLICATE_PROP] = '{0}: クラス定義内でプロパティ名が重複しています。名前={1}';
-	errMsgMap[ERR_CODE_DUPLICATE_STATIC_PROP] = '{0}: クラス定義内で静的プロパティ名が重複しています。名前={1}';
-	errMsgMap[ERR_CODE_STATIC_METHOD_MUST_BE_FUNCTION] = '{0}: クラス定義の静的methodには関数以外は指定できません。メソッド名={1}';
-	addFwErrorCodeMap(errMsgMap);
-	/* del end */
+	var ERR_CONSTRUCTOR_CHAIN = '親クラスのコンストラクタ呼び出しが途中で行われていません。継承関係のあるすべてのクラスのコンストラクタの先頭で Foo._super.call(this) のような親コンストラクタの呼び出しが行われていることを確認してください。';
+	var ERR_CANNOT_DEFINE_ROOT_CLASS_PROPERTY = '親クラスで定義されているプロパティは再定義できません。';
+	var ERR_CLASS_IS_ABSTRACT = 'このクラスは抽象クラスです。インスタンスを生成することはできません。';
+	var ERR_METHOD_MUST_BE_FUNCTION = 'クラスディスクリプタのmethodには、関数以外は指定できません。';
+	var ERR_ROOT_CLASS_IS_ALREADY_DEFINED = 'このマネージャのルートクラスは既に定義済みです。ルートクラスを取得したい場合はgetRootClass()を、ルートクラスを継承した子クラスを定義したい場合はクラスのextend()メソッドを呼び出してください。';
+	var ERR_DUPLICATE_MEMBER = 'メンバーの名前 "{0}" が重複しています。';
+	var ERR_STATIC_PRESERVED_MEMBER = '静的メンバーの名前 "{0}" は使用できません。';
+	var ERR_STATIC_DUPLICATE_MEMBER = '静的メンバーの名前 "{0}" が重複しています。';
+	var ERR_STATIC_METHOD_MUST_BE_FUNCTION = 'クラスディスクリプタのmethodには、関数以外は指定できません。';
 
 	var PROPERTY_BACKING_STORE_PREFIX = '_p_';
 
 	/**
 	 * JavaScriptのFunction上の予約語
 	 */
-	var JS_RESERVED_NAMES = ['length', 'name', 'displayName', 'arguments', 'prototype', 'caller'];
-
+	var JS_PRESERVED_NAMES = ['length', 'name', 'displayName', 'arguments', 'prototype', 'caller'];
 	/**
-	 * h5.clsのクラスオブジェクトの予約語
+	 * h5clsのクラスオブジェクトの予約語
 	 */
-	var H5_RESERVED_NAMES = ['extend', 'getClass'];
+	var H5_PRESERVED_NAMES = ['extend', 'getClass'];
+	var STATIC_PRESERVED_NAMES = JS_PRESERVED_NAMES.concat(H5_PRESERVED_NAMES);
 
-	/**
-	 * JSとh5.clsの予約語をマージした配列。この配列で定義されている名前は静的プロパティ名に使えない
-	 */
-	var RESERVED_STATIC_NAMES = JS_RESERVED_NAMES.concat(H5_RESERVED_NAMES);
+	function setupProperty(instance, klass) {
+		var parentClass = klass.getParentClass();
+		if (parentClass) {
+			setupProperty(instance, parentClass);
+		}
+		initProperty(instance, klass.getDescriptor());
+	}
+
+	function initProperty(instance, classDescriptor) {
+		//通常のフィールドを定義
+		var fieldDesc = classDescriptor.field;
+		if (fieldDesc) {
+			for ( var fieldName in fieldDesc) {
+				var fd = fieldDesc[fieldName];
+				var defaultValue = null;
+				if (fd && fd.defaultValue !== undefined) {
+					defaultValue = fd.defaultValue;
+				}
+				instance[fieldName] = defaultValue;
+			}
+		}
+
+		//アクセサプロパティ(getter/setter)のバッキングストアを定義
+		//ただし、get, setを独自に定義している場合は作成しない
+		//(ユーザーはバッキングストアとして使用するフィールドをfieldで定義しておく必要がある)
+		var accessorDesc = classDescriptor.accessor;
+		if (accessorDesc) {
+			for ( var accessorName in accessorDesc) {
+				var ad = accessorDesc[accessorName];
+				var defaultValue = null;
+				if (ad && ad.defaultValue !== undefined) {
+					defaultValue = ad.defaultValue;
+				}
+
+				if (ad == null) {
+					//TODO バリデータセット(type, constraint)
+					Object.defineProperty(instance, PROPERTY_BACKING_STORE_PREFIX + accessorName, {
+						writable: true,
+						configurable: false,
+						enumerable: false,
+						value: defaultValue
+					});
+				}
+			}
+		}
+	}
 
 	/**
 	 * 静的メンバーの名前が使用可能かどうかをチェックします。NG名だった場合は例外を投げます。
@@ -5455,26 +5472,20 @@ var h5internal = {
 	 * @throws Error
 	 */
 	function validateStaticMemberName(name) {
-		RESERVED_STATIC_NAMES.forEach(function(n) {
+		STATIC_PRESERVED_NAMES.forEach(function(n) {
 			if (name === n) {
-				throwFwError(ERR_CODE_RESERVED_STATIC_PROP_NAME, name);
+				throw new Error(h5.u.str.format(ERR_STATIC_PRESERVED_MEMBER, name));
 			}
 		});
 	}
 
 	function defineClass(classManager, parentClass, classDescriptor) {
-		if (!classDescriptor) {
-			throwFwError(ERR_CODE_NO_CLASS_DESC);
-		}
-		if (!classDescriptor.name) {
-			throwFwError(ERR_CODE_NO_CLASS_NAME);
+		if (!classDescriptor || !classDescriptor.name) {
+			//TODO throwFwError()にする
+			throw new Error('classDescritporがない、またはnameがありません。');
 		}
 		if (!classDescriptor.method || !classDescriptor.method.constructor) {
-			throwFwError(ERR_CODE_NO_CLASS_CONSTRUCTOR, classDescriptor.name);
-		}
-
-		if (typeof classDescriptor.isDynamic !== 'undefined') {
-			fwLogger.warn(FW_LOG_ISDYNAMIC_IS_OBSOLETE, classDescriptor.name);
+			throw new Error('classDescritporのメソッド定義にconstructor定義がありません。');
 		}
 
 		var ctor = classDescriptor.method.constructor;
@@ -5511,16 +5522,34 @@ var h5internal = {
 			}
 		};
 
-		// superObjectには、メソッドとアクセサを直接ぶら下げる（コピーする）。
+		// superObject、メソッドとアクセサを直接ぶら下げる（コピーする）。
 		// このsuperObjectは、extend(function(_super){}) のように引数で渡され、
 		// _super.constructor.call(this); _super.myMethod.call(this); のように
 		// call()（またはapply()）の形でのみ使用されることを意図したものである。
+		// 従い、下記ループ中では　superObject.myMethod = myMethodFunc; のように
+		// 単純にコピーしていけばよい。
 		// アクセサについては、superObjectを対象にdefinePropertyすればよい。
 		// これによって、 extend()時に MyClass._super.prototype.myMethod.call();
 		// が _super.myMethod.call(this, xxx); にできる。
+		// なお、直近の広報互換性のため、下記のnewClass._superの代入は残しておくこと。
 
 		var newClass = new HifiveClass(classManager, classDescriptor, ctor, parentClass,
 				superObject);
+
+		//TODO 下記コメントは古い(2017/3/9) 現在は引数でsuper_を受け取る。コメント削除予定
+		//クラスディスクリプタ記述時、constructor: function() MyClass {} のように
+		//名前付き関数で書くことが推奨であり、この場合
+		// var MyClass = Class.extend({ constructor: function MyClass(){ MyClass._super.call(this) } });
+		//のコンストラクタ内のMyClassが指すのはコンストラクタ関数自身である。
+		//しかし、コンストラクタを匿名関数にした場合、
+		//（var MyClass = Class.extend({ constructor: function(){ MyClass._super.call(this) } });
+		//のように書かれた場合をイメージ）
+		//その時にコンストラクタ内で参照されるのは変数のMyClassになる。
+		//そのような場合にも正しくスーパークラスのコンストラクタを呼び出せるよう
+		//Classインスタンスの_super変数にも親クラスのコンストラクタをセットしておく。
+
+		//後方互換コード廃止（2017/3/9）
+		//newClass._super = ctor._super;
 
 		ctor.prototype.__name = classDescriptor.name;
 		ctor.prototype._class = newClass;
@@ -5562,12 +5591,13 @@ var h5internal = {
 			}
 			var method = methodDesc[m];
 			if (typeof method !== 'function') {
-				throwFwError(ERR_CODE_METHOD_MUST_BE_FUNCTION, [classDescriptor.name, m]);
+				throw new Error(ERR_METHOD_MUST_BE_FUNCTION + 'メソッド=' + classDescriptor.name + '.'
+						+ m); //TODO throwFwError()
 			}
 			// 重複チェック
 			if ((typeof members[m] === 'string' && members[m] !== 'method')
 					|| (fieldDesc && m in fieldDesc) || (accessorDesc && m in accessorDesc)) {
-				throwFwError(ERR_CODE_DUPLICATE_PROP, [classDescriptor.name, m]);
+				throw new Error(h5.u.str.format(ERR_DUPLICATE_MEMBER, m));
 			}
 			ctor.prototype[m] = method;
 		}
@@ -5576,46 +5606,38 @@ var h5internal = {
 			for ( var f in fieldDesc) {
 				if ((typeof members[f] === 'string' && members[f] !== 'field')
 						|| (accessorDesc && f in accessorDesc) || (f in methodDesc)) {
-					throwFwError(ERR_CODE_DUPLICATE_PROP, [classDescriptor.name, f]);
+					throw new Error(h5.u.str.format(ERR_DUPLICATE_MEMBER, f));
 				}
-
-				//インスタンスでフィールドを初期化せずに値を読みだした場合は
-				//プロトタイプチェーンをたどって「null」が返るようにする
-				//（プロトタイプオブジェクトでその名前のフィールドを(値=nullで)定義しておく）
-				var fd = fieldDesc[f];
-				var defaultValue = null;
-				if (fd && fd.defaultValue !== undefined) {
-					defaultValue = fd.defaultValue;
-				}
-
-				ctor.prototype[f] = defaultValue;
 			}
 		}
 
 		if (accessorDesc) {
 			if ('_class' in accessorDesc) {
-				throwFwError(ERR_CODE_CANNOT_DEFINE_ROOT_CLASS_PROPS, [classDescriptor.name,
-						'_class']);
+				//TODO ルートクラスで必ず定義されるプロパティを再定義しようとしていないかチェック(汎化)
+				throw new Error(ERR_CANNOT_DEFINE_ROOT_CLASS_PROPERTY + 'プロパティ名=' + '_class');
 			}
 
 			for ( var propName in accessorDesc) {
 				if ((typeof members[propName] === 'string' && members[propName] !== 'accessor')
 						|| (fieldDesc && propName in fieldDesc) || (propName in methodDesc)) {
-					throwFwError(ERR_CODE_DUPLICATE_PROP, [classDescriptor.name, propName]);
+					throw new Error(h5.u.str.format(ERR_DUPLICATE_MEMBER, propName));
 				}
 
 				var ad = accessorDesc[propName];
 				if (ad) {
 					//アクセサとしてgetter, setter関数が書いてある場合
-					Object.defineProperty(ctor.prototype, propName, {
-						configurable: false,
-						enumerable: true,
-						get: ad.get,
-						set: ad.set
-					});
+					//TODO この即時関数を関数化
+					(function(pName) {
+						Object.defineProperty(ctor.prototype, pName, {
+							configurable: false,
+							enumerable: true,
+							get: ad.get,
+							set: ad.set
+						});
+					})(propName);
 				} else {
-					//アクセサの定義だけがある（getter, setterの関数は書かれていない）場合は
-					//バッキングフィールド自動定義
+					//アクセサだけ定義がある場合
+					//TODO propertyChangeイベントをあげるアクセサをデフォルトでセットする
 					(function(pName) {
 						Object.defineProperty(ctor.prototype, pName, {
 							configurable: false,
@@ -5627,21 +5649,6 @@ var h5internal = {
 								this[PROPERTY_BACKING_STORE_PREFIX + pName] = value;
 							}
 						});
-
-						var defaultValue = null;
-						if (ad && ad.defaultValue !== undefined) {
-							defaultValue = ad.defaultValue;
-						}
-
-						//バッキングストアは暗黙的に作られるものなので
-						//enumerable=falseで生成する
-						Object.defineProperty(ctor.prototype,
-								PROPERTY_BACKING_STORE_PREFIX + pName, {
-									writable: true,
-									configurable: false,
-									enumerable: false,
-									value: defaultValue
-								});
 					})(propName);
 				}
 			}
@@ -5715,7 +5722,7 @@ var h5internal = {
 		for (var i = 0; i < length - 1; i++) {
 			for (var j = i + 1; j < length; j++) {
 				if (names[i] === names[j]) {
-					throwFwError(ERR_CODE_DUPLICATE_STATIC_PROP, [descriptor.name, names[i]]);
+					throw new Error(h5.u.str.format(ERR_STATIC_DUPLICATE_MEMBER, names[i]));
 				}
 			}
 		}
@@ -5803,21 +5810,23 @@ var h5internal = {
 	 * @param methodDescriptor メソッドディスクリプタ
 	 */
 	function defineStaticMethods(cls, methodDescriptor) {
-		Object.keys(methodDescriptor).forEach(function(name) {
-			var method = methodDescriptor[name];
-			if (typeof method !== 'function') {
-				throwFwError(ERR_CODE_STATIC_METHOD_MUST_BE_FUNCTION, [cls.getFullName(), name]);
-			}
+		Object.keys(methodDescriptor).forEach(
+				function(name) {
+					var method = methodDescriptor[name];
+					if (typeof method !== 'function') {
+						throw new Error(ERR_STATIC_METHOD_MUST_BE_FUNCTION + 'メソッド='
+								+ cls.getFullName() + '.' + name);
+					}
 
-			var descriptor = {
-				enumerable: false,
-				configurable: false,
-				value: method,
-				writable: false
-			};
-			Object.defineProperty(cls._ctor, name, descriptor);
-			Object.defineProperty(cls.statics, name, descriptor);
-		});
+					var descriptor = {
+						enumerable: false,
+						configurable: false,
+						value: method,
+						writable: false
+					};
+					Object.defineProperty(cls._ctor, name, descriptor);
+					Object.defineProperty(cls.statics, name, descriptor);
+				});
 	}
 
 
@@ -5847,22 +5856,20 @@ var h5internal = {
 
 		create: function() {
 			if (this._descriptor.isAbstract === true) {
-				throwFwError(ERR_CODE_CLASS_IS_ABSTRACT, this._descriptor.name);
+				//TODO throwFwError
+				throw new Error(ERR_CLASS_IS_ABSTRACT);
 			}
 
 			var instance = Object.create(this._ctor.prototype);
 
-			//ver.1.3.2まで、クラス定義にisDynamic: false（デフォルト：false）を指定すると、
-			//インスタンス生成時にクラス定義で書かれているフィールドを
-			//インスタンスにown-propertyとして作成し、各インスタンスに対してObject.seal()していた。
-			//しかし、この処理に時間がかかるため、数が増えるとインスタンスの生成だけで
-			//ある程度の時間がかかるようになってしまっていた。（特にIE11とFirefoxで速度が劣化する）
-			//そのため、ver.1.3.3にて仕様変更し、isDynamicの設定は削除し、かつ、
-			//インスタンス生成時にはフィールドの初期化は行わないようにした。
-			//ただしこのため、isDynamic=trueの場合、一度も書き込みしていないフィールドは
-			// instance.hasOwnProperty('fieldName')がfalseになる、という副作用がある。
-			// (for-inループの場合は、prototypeオブジェクトにフィールドを定義してあるので列挙される
-			// (自動生成されたアクセサ用バッキングストアを除く))
+			//プロパティの初期化（追加）
+			setupProperty(instance, this);
+
+			//明示的に拡張可能(dynamic)と指定されない限り、プロパティの追加・削除・設定変更を禁止
+			//TODO いずれかの親クラスでisDynamicが明示的にfalseに指定されたら、再度trueにはできないようにすべきか？
+			if (this._descriptor.isDynamic !== true) {
+				Object.seal(instance);
+			}
 
 			//argumentsを配列化する処理はこのforループでこの場所で行うこと。
 			//詳細はsuperObjectのconstructor参照。
@@ -5876,9 +5883,8 @@ var h5internal = {
 			this._ctor.apply(instance, argsArray);
 
 			if (this._isCtorChained === false) {
-				//クラスのコンストラクタ実行後、RootClassのコンストラクタまで実行されていない
-				//= _super.constructor.call();が途中で途切れている場合はエラーにする
-				throwFwError(ERR_CODE_CTOR_NOT_CHAINED, this._descriptor.name);
+				//RootClassのコンストラクタまで実行されていなければエラーにする
+				throw new Error(ERR_CONSTRUCTOR_CHAIN);
 			}
 
 			return instance;
@@ -5963,7 +5969,7 @@ var h5internal = {
 		 */
 		getNamespaceObject: function(namespace) {
 			if (!namespace) {
-				throwFwError(ERR_CODE_INVALID_NAMESPACE);
+				throw new Error('namespaceが指定されていません。');
 			}
 
 			var ns = namespace + '.';
